@@ -15,6 +15,7 @@ class MyApp(QtWidgets.QWidget):
         """
         self.timerThread = TimerThread()
 
+
         self.timerThread.started.connect(self.timerThreadStarted)
         self.timerThread.finished.connect(self.timerThreadFinished)
         self.timerThread.timerSignal.connect(self.TimerThreadTimerSignal)  #
@@ -134,7 +135,7 @@ class TimerThread(QtCore.QThread):
                 break
             time.sleep(1)
             self.timerCount -= 1
-            self.timerSignal.emit(self.timerCount)
+            self.timerSignal.emit(str(self.timerCount))
 
 
         # for i in range(self.timerCount, 0, -1):
