@@ -9,9 +9,17 @@ class MyApp(QtWidgets.QWidget):
         self.initThreads()
 
     def initThreads(self):
+        """
+        Метод инициализации потоков.
+        :return:
+        """
         self.timerThread = TimerThread()
 
     def initUi(self):
+        """
+        Метод инициализации пользовательского интерфейса
+        :return:
+        """
         # ui
         self.setFixedSize(180, 150)  # Установка фиксированных размеров окна
 
@@ -49,12 +57,25 @@ class MyApp(QtWidgets.QWidget):
         self.pushButtonStart.clicked.connect(self.onPushButtonStartClicked)
 
     def onPushButtonStartClicked(self):
+        """
+        Метод-слот для отработки сигнала clicked виджета self.pbStart
+        Запускает поток, в котором будет выполняться бэкенд.
+        :return:
+        """
+        self.timerThread.timerCount = int(self.lineEditStart.text())
         self.timerThread.start()
 
 class TimerThread(QtCore.QThread):
 
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.timerCount = None
+
     def run(self) -> None:
-        for i in range(10, 0, -1):
+        if self.timerCount is None:
+            self.timerCount = 10
+
+        for i in range(self.timerCount, 0, -1):
             print(i)
             time.sleep(1)
 
