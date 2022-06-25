@@ -17,7 +17,7 @@ class MyApp(QtWidgets.QWidget):
 
         self.timerThread.started.connect(self.timerThreadStarted)
         self.timerThread.finished.connect(self.timerThreadFinished)
-        self.timerThread.timerSignal.connect(self.TimerThreadTimerSignal)
+        self.timerThread.timerSignal.connect(self.TimerThreadTimerSignal)  #
 
     def initUi(self):
         """
@@ -60,6 +60,7 @@ class MyApp(QtWidgets.QWidget):
 
         # widgets signals
         self.pushButtonStart.clicked.connect(self.onPushButtonStartClicked)
+        self.pushButtonStop.clicked.connect(self.onPushButtonStopClicked)
 
     def onPushButtonStartClicked(self):
         """
@@ -74,6 +75,13 @@ class MyApp(QtWidgets.QWidget):
         except ValueError:
             self.lineEditStart.setText('')
             QtWidgets.QMessageBox.warning(self, 'Ошибка', 'Таймер поддерживает только целочисленные значения.')
+
+    def onPushButtonStopClicked(self):
+        # self.timerThread.terminate()
+        # Просто выключает поток в любой момент времени.
+        self.timerThread.status = False
+        # Меняет условие выполнения цикла в потоке и грубо не прерывает поток.
+        # Позволяет закончить выполнение задачи, исполняемой в цикле.
 
     def timerThreadStarted(self):
         """
@@ -96,27 +104,43 @@ class MyApp(QtWidgets.QWidget):
         QtWidgets.QMessageBox.about(self, 'Готово.', 'Таймер закончил выполнение.')
 
     def TimerThreadTimerSignal(self, emit_value):
+        """
+        Слот для передачи значений из потока в лайн эдит
+        :param emit_value:
+        :return:
+        """
         self.lineEditStart.setText(emit_value)
 
 
 class TimerThread(QtCore.QThread):
     """
-    Выделение потока для исполнения таймера.
+    Выделение потока для исполнения таймера. Данные из потока передаются сигналом.
     """
-    timerSignal = QtCore.Signal(str)  # Пользовательский сигнал
+    timerSignal = QtCore.Signal(str)
+    # Пользовательский сигнал, передаём стринг, т.к. self.lineEditStart.setText(emit_value) принимает стр.
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.timerCount = None
+        self.status = None
 
     def run(self) -> None:  # Смотри onPushButtonStartClicked
+        self.status = True
         if self.timerCount is None:
             self.timerCount = 10
 
-        for i in range(self.timerCount, 0, -1):
-            # print(i)
-            self.timerSignal.emit(str(i))  # Передаём строго тип данных указанный в сигнале,
+        while self.status:
+            if self.timerCount < 1:
+                break
             time.sleep(1)
+            self.timerCount -= 1
+            self.timerSignal.emit(self.timerCount)
+
+
+        # for i in range(self.timerCount, 0, -1):
+        #     # print(i)
+        #     self.timerSignal.emit(str(i))  # Передаём строго тип данных указанный в сигнале,
+        #     time.sleep(1)
 
 
 if __name__ == '__main__':
