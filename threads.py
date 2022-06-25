@@ -15,6 +15,9 @@ class MyApp(QtWidgets.QWidget):
         """
         self.timerThread = TimerThread()
 
+        self.timerThread.started.connect(self.timerThreadStarted)
+        self.timerThread.finished.connect(self.timerThreadFinished)
+
     def initUi(self):
         """
         Метод инициализации пользовательского интерфейса
@@ -31,6 +34,7 @@ class MyApp(QtWidgets.QWidget):
 
         self.pushButtonStop = QtWidgets.QPushButton()
         self.pushButtonStop.setText('Stop')
+        self.pushButtonStop.setEnabled(False)
 
         # Изменение политик растяжения кнопок.
         # self.pushButtonStop.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
@@ -62,8 +66,31 @@ class MyApp(QtWidgets.QWidget):
         Запускает поток, в котором будет выполняться бэкенд.
         :return:
         """
-        self.timerThread.timerCount = int(self.lineEditStart.text())
-        self.timerThread.start()
+        try:
+            self.timerThread.timerCount = int(self.lineEditStart.text())
+            self.timerThread.start()
+        except ValueError:
+            self.lineEditStart.setText('')
+            QtWidgets.QMessageBox.warning(self, 'Ошибка', 'Таймер поддерживает только целочисленные значения.')
+
+    def timerThreadStarted(self):
+        """
+        Слот для действий после нажатия старта.
+        :return:
+        """
+        self.pushButtonStop.setEnabled(True)
+        self.pushButtonStart.setEnabled(False)
+        self.lineEditStart.setEnabled(False)
+
+    def timerThreadFinished(self):
+        """
+        Слот для действий после выполнения таймера.
+        :return:
+        """
+        self.pushButtonStop.setEnabled(False)
+        self.pushButtonStart.setEnabled(True)
+        self.lineEditStart.setEnabled(True)
+
 
 class TimerThread(QtCore.QThread):
 
