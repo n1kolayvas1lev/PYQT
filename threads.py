@@ -17,6 +17,7 @@ class MyApp(QtWidgets.QWidget):
 
         self.timerThread.started.connect(self.timerThreadStarted)
         self.timerThread.finished.connect(self.timerThreadFinished)
+        self.timerThread.timerSignal.connect(self.TimerThreadTimerSignal)
 
     def initUi(self):
         """
@@ -69,6 +70,7 @@ class MyApp(QtWidgets.QWidget):
         try:
             self.timerThread.timerCount = int(self.lineEditStart.text())
             self.timerThread.start()
+            # Нужно запомнить, что вызываем метод старт, а в потоке переопределяем метод .run()
         except ValueError:
             self.lineEditStart.setText('')
             QtWidgets.QMessageBox.warning(self, 'Ошибка', 'Таймер поддерживает только целочисленные значения.')
@@ -90,20 +92,30 @@ class MyApp(QtWidgets.QWidget):
         self.pushButtonStop.setEnabled(False)
         self.pushButtonStart.setEnabled(True)
         self.lineEditStart.setEnabled(True)
+        self.lineEditStart.setText('')
+        QtWidgets.QMessageBox.about(self, 'Готово.', 'Таймер закончил выполнение.')
+
+    def TimerThreadTimerSignal(self, emit_value):
+        self.lineEditStart.setText(emit_value)
 
 
 class TimerThread(QtCore.QThread):
+    """
+    Выделение потока для исполнения таймера.
+    """
+    timerSignal = QtCore.Signal(str)  # Пользовательский сигнал
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.timerCount = None
 
-    def run(self) -> None:
+    def run(self) -> None:  # Смотри onPushButtonStartClicked
         if self.timerCount is None:
             self.timerCount = 10
 
         for i in range(self.timerCount, 0, -1):
-            print(i)
+            # print(i)
+            self.timerSignal.emit(str(i))  # Передаём строго тип данных указанный в сигнале,
             time.sleep(1)
 
 
