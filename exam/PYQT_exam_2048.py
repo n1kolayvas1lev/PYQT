@@ -46,7 +46,7 @@ class GameForm(QMainWindow):
 
     def initGameData(self) -> None:
         """
-        Инициализация стартовых табличек.
+        Инициализация стартового игрового поля.
         :return: None
         """
         self.data = [[0, 0, 0, 0],
@@ -64,7 +64,7 @@ class GameForm(QMainWindow):
 
         self.curScore = 0
         self.bstScore = 0
-        # Загрузить наивысший балл
+        # Загрузка рекордного счёта.
         if os.path.exists("bestscore.ini"):
             with open("bestscore.ini", "r") as f:
                 self.bstScore = int(f.read())
@@ -209,13 +209,13 @@ class GameForm(QMainWindow):
 
                 qp.setPen(QColor(*color))
                 qp.setBrush(QColor(*color))
-                qp.drawRect(30 + col * 115, 165 + row * 115, 100, 100)  # Отрисовка на заднем фоне маленькие квадратики цифр
+                qp.drawRect(30 + col * 115, 165 + row * 115, 100, 100)  # Отрисовка табличек с цифрами
                 size = self.nmFont.pointSize() * len(str(value))  # Получить длину числа, отображаемого текущим шрифтом
                 # Изменение размера шрифта в соответствии с длинной строки
                 while size > 100 - 15 * 2:
                     self.nmFont = QFont('Arial', self.nmFont.pointSize() * 4 // 5)
                     qp.setFont(self.nmFont)
-                    size = self.nmFont.pointSize() * len(str(value))  # Получить длину числа, отображаемого текущим шрифтом
+                    size = self.nmFont.pointSize() * len(str(value))  # Получить длину строки с числом, отображаемым текущим шрифтом
                 print("[%d][%d]: value[%d] weight: %d" % (row, col, value, size))
 
                 # Отображение ненулевых значений
