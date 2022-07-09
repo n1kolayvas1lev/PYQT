@@ -19,10 +19,7 @@ class GameForm(QMainWindow):
         self.colors = {0: (204, 192, 179), 2: (238, 228, 218), 4: (237, 224, 200),
                        8: (242, 177, 121), 16: (245, 149, 99), 32: (246, 124, 95),
                        64: (246, 94, 59), 128: (237, 207, 114), 256: (237, 207, 114),
-                       512: (237, 207, 114), 1024: (237, 207, 114), 2048: (237, 207, 114),
-                       4096: (237, 207, 114), 8192: (237, 207, 114), 16384: (237, 207, 114),
-                       32768: (237, 207, 114), 65536: (237, 207, 114), 131072: (237, 207, 114),
-                       262144: (237, 207, 114), 524288: (237, 207, 114), 1048576: (237, 207, 114)}
+                       512: (237, 207, 114), 1024: (237, 207, 114), 2048: (237, 207, 114)}
         self.initGameData()
 
     def initUi(self) -> None:
@@ -31,7 +28,7 @@ class GameForm(QMainWindow):
         :return: None
         """
         self.setWindowTitle("2048")
-        self.resize(640, 720)
+        self.resize(720, 840)
         self.setFixedSize(self.width(), self.height())
         self.initGameOpt()
 
@@ -44,15 +41,38 @@ class GameForm(QMainWindow):
         self.lgFont = QFont('Arial', 50)  # Шрифт названия
         self.nmFont = QFont('Arial', 36)  # Шрифт цифр
 
-    def initGameData(self) -> None:
+    def initGameData(self) -> int:
         """
         Инициализация стартового игрового поля.
-        :return: None
+        :return: int
         """
-        self.data = [[0, 0, 0, 0],
-                     [0, 0, 0, 0],
-                     [0, 0, 0, 0],
-                     [0, 0, 0, 0]]
+
+        button = QMessageBox.warning(self, "Вопрос", u"Выбираем размер поля?",
+                                     QMessageBox.Ok | QMessageBox.No,
+                                     QMessageBox.Ok)
+        if button == QMessageBox.Ok:
+            button2 = QMessageBox.warning(self, "Вопрос", u"Ok - 5x5, No - 3x3?",
+                                         QMessageBox.Ok | QMessageBox.No,
+                                         QMessageBox.Ok)
+            if button2 == QMessageBox.Ok:
+                self.data = [[0, 0, 0, 0, 0],
+                             [0, 0, 0, 0, 0],
+                             [0, 0, 0, 0, 0],
+                             [0, 0, 0, 0, 0],
+                             [0, 0, 0, 0, 0]]
+                self.range = 5
+
+            elif button2 == QMessageBox.No:
+                self.data = [[0, 0, 0],
+                             [0, 0, 0],
+                             [0, 0, 0]]
+                self.range = 3
+        else:
+            self.data = [[0, 0, 0, 0],
+                         [0, 0, 0, 0],
+                         [0, 0, 0, 0],
+                         [0, 0, 0, 0]]
+            self.range = 4
         count = 0
         while count < 2:
             row = random.randint(0, len(self.data) - 1)
@@ -65,9 +85,10 @@ class GameForm(QMainWindow):
         self.curScore = 0
         self.bstScore = 0
         # Загрузка рекордного счёта.
-        if os.path.exists("bestscore.ini"):
-            with open("bestscore.ini", "r") as f:
+        if os.path.exists("score.txt"):
+            with open("score.txt", "r") as f:
                 self.bstScore = int(f.read())
+
 
     def paintEvent(self, event) -> None:
         """
@@ -108,7 +129,7 @@ class GameForm(QMainWindow):
         :param event: event
         :return: None
         """
-        with open("bestscore.ini", "w") as f:
+        with open("score.txt", "w") as f:
             f.write(str(self.bstScore))
 
     def drawGameGraph(self, qp) -> None:
@@ -169,7 +190,12 @@ class GameForm(QMainWindow):
         qp.setPen(col)
 
         qp.setBrush(QColor(187, 173, 160))
-        qp.drawRect(15, 150, 475, 475)  # Отрисовка игрового поля
+        if self.range == 4:
+            qp.drawRect(15, 150, 475, 475)  # Отрисовка игрового поля
+        elif self.range == 3:
+            qp.drawRect(15, 150, 360, 360)
+        elif self.range == 5:
+            qp.drawRect(15, 150, 590, 590)
 
     def drawLog(self, qp) -> None:
         """
@@ -191,9 +217,9 @@ class GameForm(QMainWindow):
         qp.setFont(self.lbFont)
         qp.setPen(QColor(119, 110, 101))
         qp.drawText(5, 134, u"Совмещайте таблички с одинаковыми числами, чтобы получить 2048!")
-        qp.drawText(5, 660, u"Как играть:")
-        qp.drawText(15, 680, u"Используйте клавиши со стрелками, чтобы переместить квадрат")
-        qp.drawText(15, 700, u"Два квадрата с одинаковым числом объединяются в один")
+        qp.drawText(5, 760, u"Как играть:")
+        qp.drawText(15, 780, u"Используйте клавиши со стрелками, чтобы переместить квадрат")
+        qp.drawText(15, 800, u"Два квадрата с одинаковым числом объединяются в один")
 
     def drawTiles(self, qp) -> None:
         """
@@ -202,8 +228,8 @@ class GameForm(QMainWindow):
         :return: None
         """
         qp.setFont(self.nmFont)
-        for row in range(4):
-            for col in range(4):
+        for row in range(self.range):
+            for col in range(self.range):
                 value = self.data[row][col]
                 color = self.colors[value]
 
