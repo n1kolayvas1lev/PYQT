@@ -343,7 +343,7 @@ class GameForm(QMainWindow):
         if not isMove:
             return False
 
-        self.putTile()  # Заполнение пустой позиции
+        self.putTile()  # Заполнение пустой позиции.
         if self.curScore > self.bstScore:
             self.bstScore = self.curScore
 
