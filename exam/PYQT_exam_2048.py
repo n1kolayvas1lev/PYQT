@@ -41,10 +41,10 @@ class GameForm(QMainWindow):
         self.lgFont = QFont('Arial', 50)  # Шрифт названия
         self.nmFont = QFont('Arial', 36)  # Шрифт цифр
 
-    def initGameData(self) -> int:
+    def initGameData(self) -> None:
         """
         Инициализация стартового игрового поля.
-        :return: int
+        :return: None
         """
 
         button = QMessageBox.warning(self, "Вопрос", u"Выбираем размер поля?",
@@ -218,7 +218,7 @@ class GameForm(QMainWindow):
         qp.setPen(QColor(119, 110, 101))
         qp.drawText(5, 134, u"Совмещайте таблички с одинаковыми числами, чтобы получить 2048!")
         qp.drawText(5, 760, u"Как играть:")
-        qp.drawText(15, 780, u"Используйте клавиши со стрелками, чтобы переместить квадрат")
+        qp.drawText(15, 780, u"Используйте клавиши со стрелками, чтобы переместить \n квадрат")
         qp.drawText(15, 800, u"Два квадрата с одинаковым числом объединяются в один")
 
     def drawTiles(self, qp) -> None:
