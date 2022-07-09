@@ -69,10 +69,10 @@ class GameForm(QMainWindow):
             with open("bestscore.ini", "r") as f:
                 self.bstScore = int(f.read())
 
-    def paintEvent(self, e) -> None:
+    def paintEvent(self, event) -> None:
         """
         Событие отрисовки.
-        :param e:
+        :param event: event
         :return: None
         """
         qp = QPainter()
@@ -80,13 +80,13 @@ class GameForm(QMainWindow):
         self.drawGameGraph(qp)
         qp.end()
 
-    def keyPressEvent(self, e) -> None:
+    def keyPressEvent(self, event) -> None:
         """
         Действие при нажатии клавиш.
-        :param e:
+        :param event: event
         :return: None
         """
-        keyCode = e.key()
+        keyCode = event.key()
         ret = False
         if keyCode == Qt.Key_Left:
             ret = self.move("Left")
@@ -102,10 +102,10 @@ class GameForm(QMainWindow):
         if ret:
             self.repaint()
 
-    def closeEvent(self, e) -> None:
+    def closeEvent(self, event) -> None:
         """
         Сохранение рекорда.
-        :param e:
+        :param event: event
         :return: None
         """
         with open("bestscore.ini", "w") as f:
@@ -325,7 +325,7 @@ class GameForm(QMainWindow):
     def move(self, direction) -> bool:
         """
         Перемещение числовой сетки.
-        :param direction:
+        :param direction: self.move
         :return: bool
         """
         isMove = False
