@@ -6,7 +6,7 @@ import random
 from PySide2 import QtWidgets
 from PySide2.QtCore import QRect, Qt
 from PySide2.QtGui import QPainter, QFont, QColor, QPen
-from PySide2.QtWidgets import QMainWindow, QMessageBox
+from PySide2.QtWidgets import QMainWindow, QMessageBox, QSizePolicy
 
 
 class GameForm(QMainWindow):
@@ -29,7 +29,9 @@ class GameForm(QMainWindow):
         """
         self.setWindowTitle("2048")
         self.resize(720, 840)
-        self.setFixedSize(self.width(), self.height())
+        # self.setFixedSize(self.width(), self.height())
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(sizePolicy)
         self.initGameOpt()
 
     def initGameOpt(self) -> None:
